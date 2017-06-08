@@ -85,16 +85,27 @@ nav a.active {
   display: flex;
   padding: 1rem;
   text-decoration: none;
+  border-left: 3px solid;
 }
 .search__item:not(:last-child) {
   border-bottom: #ccc 1px solid;
 }
 
-.search__item:hover {
+.search__item:hover,
+.search__item.offline:hover {
   background-color: #f4f4f4;
 }
 .search__item * {
   text-decoration: none;
+}
+
+.search__item.offline {
+  border-left-color: #f9f9f9;
+  background-color: #f9f9f9;
+}
+
+.search__item.streaming {
+  border-left-color: orange;
 }
 
 .status {
@@ -104,9 +115,6 @@ nav a.active {
   font-size: 1.4rem;
 }
 
-.status.is-active {
-  color: green;
-}
 
 .user {
   padding: 0 2rem;
