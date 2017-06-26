@@ -14,30 +14,35 @@ $(document).ready(function(){
 
 function removeActiveNavClass() {
   const nav = document.querySelector('nav');
-  const link = nav.querySelectorAll('a');
+  const link = nav.querySelectorAll('button');
   $.each(link, function(){
     $(this).removeClass('active');
   });
 }
 
-showStreaming.addEventListener('click', function() {
+function updateList(hide, show, showAll) {
   removeActiveNavClass();
-  $('.offline').hide();
-  $('.streaming').show();
+  if(showAll == true) {
+    $('.streaming').show();
+    $('.offline').show();
+  } else {
+    $(`.${hide}`).hide();
+    $(`.${show}`).show();
+  }
+}
+
+showStreaming.addEventListener('click', function() {
+  updateList('offline', 'streaming', false);
   $(this).addClass('active');
 });
 
 showOffline.addEventListener('click', function(){
-  removeActiveNavClass();
-  $('.streaming').hide();
-  $('.offline').show();
+  updateList('streaming', 'offline', false);
   $(this).addClass('active');
 });
 
 showAll.addEventListener('click', function(){
-  removeActiveNavClass();
-  $('.streaming').show();
-  $('.offline').show();
+  updateList('', '', true);
   $(this).addClass('active');
 })
 

@@ -37,8 +37,9 @@ nav {
   height: 4.8rem;
 }
 
-nav a {
+nav button {
   align-items: center;
+  background-color: #fff;
   border: #ccc 1px solid;
   cursor: pointer;
   color: #666;
@@ -53,11 +54,11 @@ nav a {
   text-transform: uppercase;
 }
 
-nav a:hover {
+nav button:hover {
   background-color: #f4f4f4;
 }
 
-nav a.active {
+nav button.active {
   background-color: #666;
   border-color: #666;
   color: #fff;
@@ -65,7 +66,7 @@ nav a.active {
   pointer-events: none;
 }
 
-nav a.active:hover {
+nav button.active:hover {
   background-color: #666;
 }
 
