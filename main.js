@@ -3,93 +3,134 @@ const searchList = document.querySelector('.search__list');
 const channelTitles = ['ESL_SC2', 'OgamingSC2', 'cretetion', 'freecodecamp', 'storbeck', 'habathcx', 'RobotCaleb', 'noobs2ninjas', 'brunofin'];
 const channelStreamStatus = [];
 const channelStreamTitle = [];
+const showStreaming = document.querySelector('.show-streaming');
+const showOffline = document.querySelector('.show-offline');
+const showAll = document.querySelector('.show-all');
+const isOffline = document.querySelector('.offline');
+const isStreaming = document.querySelector('.streaming');
+$(document).ready(function(){
+  init();
+});
 
-function createEndpoint(type, channel) {
-  return `https://wind-bow.gomix.me/twitch-api/${type}/${channel}?callback=?`
+function removeActiveNavClass() {
+  const nav = document.querySelector('nav');
+  const link = nav.querySelectorAll('a');
+  $.each(link, function(){
+    $(this).removeClass('active');
+  });
 }
 
-$.each(channelTitles, function(i, val) {
-  $.getJSON(createEndpoint('streams', val), function(data) {
-    console.log(data);
-    if(data.stream) {
-      channelStreamStatus.push('streaming');
-      channelStreamTitle.push(`${data.stream.channel.game}: ${data.stream.channel.status}`);
-    } else {
-      channelStreamStatus.push('offline');
-      channelStreamTitle.push('');
-    }
-  });
+showStreaming.addEventListener('click', function() {
+  removeActiveNavClass();
+  $('.offline').hide();
+  $('.streaming').show();
+  $(this).addClass('active');
+});
+
+showOffline.addEventListener('click', function(){
+  removeActiveNavClass();
+  $('.streaming').hide();
+  $('.offline').show();
+  $(this).addClass('active');
+});
+
+showAll.addEventListener('click', function(){
+  removeActiveNavClass();
+  $('.streaming').show();
+  $('.offline').show();
+  $(this).addClass('active');
 })
 
-setTimeout(function(){
-  // setTimeout Allowls channelStreamStatus to be populated
+function init() {
+  function createEndpoint(type, channel) {
+    return `https://wind-bow.gomix.me/twitch-api/${type}/${channel}?callback=?`
+  }
+
   $.each(channelTitles, function(i, val) {
-    $.getJSON(createEndpoint('channels', val), function(data) {
+    $.getJSON(createEndpoint('streams', val), function(data) {
       console.log(data);
-      console.log(`${val} is ${channelStreamStatus[i]}`);
-      let streamStatus = channelStreamStatus[i];
-      let logo = data.logo;
-      logo ? logo = logo : logo = logo = 'https://unsplash.it/100/100';
-
-      // Does user exist?
-      let isError = data.error;
-
-      const item = document.createElement('a');
-      item.className = `search__item ${channelStreamStatus[i]}`;
-      item.setAttribute('href', data.url);
-      item.setAttribute('target', '_blank');
-      item.setAttribute('rel', 'noopener');
-
-      const avatar = document.createElement('div');
-      avatar.classList.add('avatar');
-
-      const img = document.createElement('img');
-      img.setAttribute('src', logo);
-      avatar.appendChild(img);
-      item.appendChild(avatar);
-
-
-      const user = document.createElement('div');
-      user.classList.add('user');
-      const userName = document.createElement('div');
-      userName.classList.add('user-name');
-      if (data.error) {
-        userName.textContent = data.message;
-        item.classList.add('unknown-user');
-        item.removeAttribute('href');
-        item.removeAttribute('rel');
-        item.removeAttribute('target');
+      if(data.stream) {
+        channelStreamStatus.push('streaming');
+        channelStreamTitle.push(`${data.stream.channel.game}: ${data.stream.channel.status}`);
       } else {
-        userName.textContent = data.name;
+        channelStreamStatus.push('offline');
+        channelStreamTitle.push('');
       }
-      user.appendChild(userName);
+    });
+  })
 
-      const status = document.createElement('div');
-      status.className = `status`;
-      status.textContent = streamStatus;
-      item.appendChild(user);
-      item.appendChild(status);
-      searchList.appendChild(item);
+  setTimeout(function(){
+    // setTimeout Allowls channelStreamStatus to be populated
+    $.each(channelTitles, function(i, val) {
+      $.getJSON(createEndpoint('channels', val), function(data) {
+        console.log(data);
+        console.log(`${val} is ${channelStreamStatus[i]}`);
+        let streamStatus = channelStreamStatus[i];
+        let logo = data.logo;
+        logo ? logo = logo : logo = logo = 'https://unsplash.it/100/100';
 
-      if(streamStatus == "streaming") {
-        const streamContainer = document.createElement('div');
-        let gameTitle = data.game;
-        let gameStatus = data.status;
-        // Some game titles and statuses are showing as 'null'
-        if(gameTitle == null) {
-          gameTitle = '';
+        // Does user exist?
+        let isError = data.error;
+
+        const item = document.createElement('a');
+        item.className = `search__item ${channelStreamStatus[i]}`;
+        item.setAttribute('href', data.url);
+        item.setAttribute('target', '_blank');
+        item.setAttribute('rel', 'noopener');
+
+        const avatar = document.createElement('div');
+        avatar.classList.add('avatar');
+
+        const img = document.createElement('img');
+        img.setAttribute('src', logo);
+        avatar.appendChild(img);
+        item.appendChild(avatar);
+
+
+        const user = document.createElement('div');
+        user.classList.add('user');
+        const userName = document.createElement('div');
+        userName.classList.add('user-name');
+        if (data.error) {
+          userName.textContent = data.message;
+          item.classList.add('unknown-user');
+          item.removeAttribute('href');
+          item.removeAttribute('rel');
+          item.removeAttribute('target');
         } else {
-          gameTitle = `${gameTitle} - `;
+          userName.textContent = data.name;
         }
-        if(gameStatus == null) {
-          gameStatus = 'Streaming, without a title.';
-        } else {
-          gameStatus = gameStatus;
+        user.appendChild(userName);
+
+        const status = document.createElement('div');
+        status.className = `status`;
+        status.textContent = streamStatus;
+        item.appendChild(user);
+        item.appendChild(status);
+        searchList.appendChild(item);
+
+        if(streamStatus == "streaming") {
+          const streamContainer = document.createElement('div');
+          let gameTitle = data.game;
+          let gameStatus = data.status;
+          // Some game titles and statuses are showing as 'null'
+
+          if(gameTitle == null) {
+            gameTitle = '';
+          } else {
+            gameTitle = `${gameTitle} - `;
+          }
+          if(gameStatus == null) {
+            gameStatus = 'Streaming, without a title.';
+          } else {
+            gameStatus = gameStatus;
+          }
+          streamContainer.className = 'stream-title';
+          streamContainer.textContent = `${gameTitle}${gameStatus}`;
+          user.append(streamContainer);
         }
-        streamContainer.className = 'stream-title';
-        streamContainer.textContent = `${gameTitle}${gameStatus}`;
-        user.append(streamContainer);
-      }
-    })
-  });
-}, 300);
+      })
+    });
+  }, 300);
+}
+
