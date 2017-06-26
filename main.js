@@ -27,17 +27,22 @@ setTimeout(function(){
     $.getJSON(createEndpoint('channels', val), function(data) {
       console.log(data);
       console.log(`${val} is ${channelStreamStatus[i]}`);
-
+      let streamStatus = channelStreamStatus[i];
       let logo = data.logo;
       logo ? logo = logo : logo = logo = 'https://unsplash.it/100/100';
+
+      // Does user exist?
+      let isError = data.error;
 
       const item = document.createElement('a');
       item.className = `search__item ${channelStreamStatus[i]}`;
       item.setAttribute('href', data.url);
       item.setAttribute('target', '_blank');
       item.setAttribute('rel', 'noopener');
+
       const avatar = document.createElement('div');
       avatar.classList.add('avatar');
+
       const img = document.createElement('img');
       img.setAttribute('src', logo);
       avatar.appendChild(img);
@@ -47,31 +52,44 @@ setTimeout(function(){
       const user = document.createElement('div');
       user.classList.add('user');
       const userName = document.createElement('div');
-      userName.textContent = data.name;
+      userName.classList.add('user-name');
+      if (data.error) {
+        userName.textContent = data.message;
+        item.classList.add('unknown-user');
+        item.removeAttribute('href');
+        item.removeAttribute('rel');
+        item.removeAttribute('target');
+      } else {
+        userName.textContent = data.name;
+      }
       user.appendChild(userName);
-
-      // TODO: if user doesn't exist
-      // Will need to reconstruct logic to show varying user states
-      // Show user name
-      // Append message
-      // Show a different image for this user
-
-
-      // TODO: if one exsits, add stream title
-      // Then append it to the user container
-      // if(channelStreamTitle[i].length) {
-        // create element
-        // add Class
-        // add text content
-        // append to user
-      // }
 
       const status = document.createElement('div');
       status.className = `status`;
-      status.textContent = channelStreamStatus[i];
+      status.textContent = streamStatus;
       item.appendChild(user);
       item.appendChild(status);
       searchList.appendChild(item);
+
+      if(streamStatus == "streaming") {
+        const streamContainer = document.createElement('div');
+        let gameTitle = data.game;
+        let gameStatus = data.status;
+        // Some game titles and statuses are showing as 'null'
+        if(gameTitle == null) {
+          gameTitle = '';
+        } else {
+          gameTitle = `${gameTitle} - `;
+        }
+        if(gameStatus == null) {
+          gameStatus = 'Streaming, without a title.';
+        } else {
+          gameStatus = gameStatus;
+        }
+        streamContainer.className = 'stream-title';
+        streamContainer.textContent = `${gameTitle}${gameStatus}`;
+        user.append(streamContainer);
+      }
     })
   });
-}, 200);
+}, 300);

@@ -104,8 +104,21 @@ nav a.active {
   background-color: #f9f9f9;
 }
 
+.search__item.unknown-user {
+  pointer-events: none;
+}
+
+.search__item.unknown-user .user-name,
+.search__item.unknown-user .avatar {
+  opacity: .5;
+}
+
 .search__item.streaming {
   border-left-color: orange;
+}
+
+.search__item.unkown-user .stream-title {
+  display: none;
 }
 
 .status {
